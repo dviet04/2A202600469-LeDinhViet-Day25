@@ -74,10 +74,14 @@ class CircuitBreaker:
 
     def record_failure(self) -> None:
         """Record failure and open when threshold is reached."""
-        # TODO(student): handle HALF_OPEN failure explicitly and reset success counter.
         self.failure_count += 1
         self.success_count = 0
-        if self.state == CircuitState.HALF_OPEN or self.failure_count >= self.failure_threshold:
+        if self.state == CircuitState.HALF_OPEN:
+            # Any failure in HALF_OPEN immediately re-opens the circuit
+            self._transition(CircuitState.OPEN, "half_open_failure")
+            self.opened_at = time.monotonic()
+        elif self.failure_count >= self.failure_threshold:
+            # In CLOSED, accumulate failures until threshold
             self._transition(CircuitState.OPEN, "failure_threshold")
             self.opened_at = time.monotonic()
 

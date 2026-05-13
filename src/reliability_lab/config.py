@@ -30,6 +30,7 @@ class CacheConfig(BaseModel):
 
 class LoadTestConfig(BaseModel):
     requests: int = Field(gt=0)
+    concurrency: int = Field(default=1, ge=1)  # 1 = sequential, >1 = concurrent
 
 
 class ScenarioConfig(BaseModel):
